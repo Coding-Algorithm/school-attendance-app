@@ -64,13 +64,25 @@ const HomeSearch = () => {
   };
 
   useEffect(() => {
+    // Getting Courses: If UserType Is Lecturer
     axios
-      .get(`http://localhost:8080/api/course/${user}`)
+      .get(`https://school-attendance-api.herokuapp.com/api/course/${userId}`)
       .then((response) => {
         setCourses(() => response.data.map((course) => course.courseCode));
       })
       .catch((err) => {
-        console.log(err.message);
+        console.log({ err: err.message });
+      });
+
+    // Getting Students: If UserType Is Lecturer
+    axios
+      .get(`https://school-attendance-api.herokuapp.com/api/student`)
+      .then((response) => {
+        setStudents(() => response.data.map((student) => student.matricNo));
+
+      })
+      .catch((err) => {
+        console.log({ err: err.message }); 
       });
   }, []);
 

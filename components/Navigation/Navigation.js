@@ -19,7 +19,7 @@ const Navigation = () => {
   return (
     <>
       <NavigationContainer style={styles.container}>
-        {!user ? (
+        {user ? (
           <Tab.Navigator screenOptions={{ headerShown: false }}>
             <Tab.Screen name="Home" component={HomePage} />
             <Tab.Screen name="Report" component={ReportStackScreen} />
