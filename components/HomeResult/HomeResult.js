@@ -6,7 +6,6 @@ import { GetContext } from "../../context/context";
 export default function HomeResult() {
   const { result, checkError } = GetContext(); 
 
-
   return ( 
     <View style={styles.homeResultContainer}>
       <OutCome result={result} checkError={checkError} />

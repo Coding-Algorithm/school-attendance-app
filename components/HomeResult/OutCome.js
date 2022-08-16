@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+ 
 export default function OutCome({ result, checkError }) {
   return result ? (
     <View>
