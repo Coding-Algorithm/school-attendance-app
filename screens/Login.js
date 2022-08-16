@@ -25,6 +25,7 @@ const Login = ({ navigation }) => {
   {
     /* Aunthentication Function */
   }
+  
   const authentication = (values) => {
     const { userType, userId, password } = values;
 
