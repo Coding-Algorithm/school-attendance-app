@@ -15,7 +15,19 @@ const Reducer = (state, action) => {
         },
       };
       break;
-      case "LOGOUT":
+    case "LOGOUT":
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          user: action.payload,
+        },
+      };
+      break;
+    case "SIGNUP":
+
+      
+
       return {
         ...state,
         auth: {

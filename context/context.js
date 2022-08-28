@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React, {
   createContext,
   useReducer,
@@ -7,6 +6,8 @@ import React, {
   useEffect,
 } from "react";
 import { Reducer } from "../reducer/reducer";
+import * as SQLite from "expo-sqlite";
+
 
 const AppContext = createContext();
 
@@ -19,6 +20,7 @@ const INITIAL_STATE = {
   result: null,
 };
 
+// Component Starting
 const ContextProvider = ({ children }) => {
   const [showStack, setShowStack] = useState(0);
   const [state, dispatch] = useReducer(Reducer, INITIAL_STATE);
@@ -27,7 +29,22 @@ const ContextProvider = ({ children }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
+  function openDatabase() {
+    const db = SQLite.openDatabase("attendance.db");
+    return db;
+  }
 
+  const db = openDatabase();
+
+
+
+  function add(data) {
+    db.transaction((txn) => {
+      txn.executeSql("INSERT INTO students (name) VALUES (?)", [data.fullname]);
+    });
+  }
+
+  // Context Methods:
   const setResult = (result) => {
     dispatch({ type: "SET_RESULT", payload: result });
   };
@@ -40,8 +57,25 @@ const ContextProvider = ({ children }) => {
     dispatch({ type: "LOGOUT", payload: user });
   };
 
-  useEffect(() => {}, [state.result]);
+  const signup = (data = {}) => {
+    dispatch({ type: "SIGNUP", payload: data, method: add });
+  };
 
+  useEffect(() => {
+    db.transaction((txn) => {
+      txn.executeSql(
+        `CREATE TABLE IF NOT EXISTS students (id INTEGER PRIMARY KEY NOT NULL AUTOINCREMENT, name TEXT) `
+      );
+    });
+    db.transaction((txn) => {
+      txn.executeSql("INSERT INTO students (name) VALUES (?)", ["fullname"]);
+      txn.executeSql("SELECT * FROM students", [], (_, {res}) => {
+        console.log("1" + res) });    });
+    
+    
+    console.log(db);
+  }, [db]);
+  
   return (
     <AppContext.Provider
       value={{
@@ -58,7 +92,7 @@ const ContextProvider = ({ children }) => {
         startDate,
         setStartDate,
         endDate,
-        setEndDate
+        setEndDate,
       }}
     >
       {children}

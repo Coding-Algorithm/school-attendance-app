@@ -62,6 +62,7 @@ const Login = ({ navigation }) => {
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={{ width: "100%", alignItems: "center" }}>
+
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>User Type: </Text>
               <ModalDropdown
@@ -83,6 +84,7 @@ const Login = ({ navigation }) => {
                 }}
               />
             </View>
+          
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>User ID: </Text>
               <TextInput
@@ -93,6 +95,7 @@ const Login = ({ navigation }) => {
                 onFocus={() => {}}
               />
             </View>
+            
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>Password: </Text>
               <TextInput
