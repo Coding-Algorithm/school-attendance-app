@@ -12,14 +12,15 @@ import { StatusBarHeight } from "../components/shared";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ModalDropdown from "react-native-modal-dropdown";
 import { Formik } from "formik";
+import { GetContext } from "../context/context";
 
 const Signup = ({ navigation }) => {
   const [text, onChangeText] = useState(null);
   const [selected, setSelected] = useState(null);
   const [userType, setUserType] = useState(["Student", "Lecturer"]);
   const [user, setUser] = useState("");
+  const { insert } = GetContext();
 
-  console.log(userType);
 
   return (
     <ScrollView style={{ width: "100%" }}>
@@ -29,11 +30,16 @@ const Signup = ({ navigation }) => {
           initialValues={{
             userID: "",
             fullname: "",
+            email: "",
             department: "",
             faculty: "",
             password: "",
+            fingerprint: "",
+            courses: "",
           }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={(values) => {
+            insert(values);
+          }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
             <View style={{ width: "100%", alignItems: "center" }}>
@@ -55,7 +61,6 @@ const Signup = ({ navigation }) => {
                   dropdownTextStyle={{ fontSize: 15, paddingHorizontal: 35 }}
                   onSelect={(index, value) => {
                     setUser(value);
-                    console.log(index);
                   }}
                 />
               </View>
@@ -76,7 +81,53 @@ const Signup = ({ navigation }) => {
                   style={[styles.signUpInput]}
                   onChangeText={handleChange("fullname")}
                   value={values.fullname}
-                  placeholder="CSC/2018/1164"
+                  placeholder="Taofeek Ibrahim"
+                  onFocus={() => {}}
+                />
+              </View>
+
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputText}>Email: </Text>
+                <TextInput
+                  style={[styles.signUpInput]}
+                  onChangeText={handleChange("email")}
+                  value={values.email}
+                  placeholder="sample@gmail.com"
+                  onFocus={() => {}}
+                />
+              </View>
+
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputText}>Password: </Text>
+                <TextInput
+                  style={styles.signUpInput}
+                  onChangeText={handleChange("password")}
+                  value={values.password}
+                  placeholder="*******"
+                  onFocus={() => {}}
+                  secureTextEntry={true}
+                />
+              </View>
+
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputText}>Fingerprint: </Text>
+                <TextInput
+                  style={styles.signUpInput}
+                  onChangeText={handleChange("fingerprint")}
+                  value={values.fingerprint}
+                  placeholder="*******"
+                  onFocus={() => {}}
+                  // secureTextEntry={true}
+                />
+              </View>
+
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputText}>Courses: </Text>
+                <TextInput
+                  style={[styles.signUpInput]}
+                  onChangeText={handleChange("courses")}
+                  value={values.courses}
+                  placeholder="CSC203,MTH209..."
                   onFocus={() => {}}
                 />
               </View>
@@ -100,18 +151,6 @@ const Signup = ({ navigation }) => {
                   value={values.faculty}
                   placeholder="Science"
                   onFocus={() => {}}
-                />
-              </View>
-
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputText}>Password: </Text>
-                <TextInput
-                  style={styles.signUpInput}
-                  onChangeText={handleChange("password")}
-                  value={values.password}
-                  placeholder="*******"
-                  onFocus={() => {}}
-                  secureTextEntry={true}
                 />
               </View>
 
@@ -202,6 +241,6 @@ const styles = StyleSheet.create({
   },
   signUpOptionsText: {
     fontSize: 12,
-    marginBottom: 20
+    marginBottom: 20,
   },
 });

@@ -1,0 +1,11 @@
+// Students
+txn.executeSql(
+        "create table if not exists students (userID varchar(13) PRIMARY KEY NOT NULL, fullname varchar(100), department varchar(3), faculty varchar(50), fingerprint varchar(255), email varchar(50), password varchar(30));",
+        [],
+        (txn, { rows }) => {
+          console.log("Table created");
+        },
+        (error) => {
+          console.log("Not Created");
+        }
+      );
