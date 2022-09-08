@@ -38,7 +38,7 @@ const Signup = ({ navigation }) => {
             courses: "",
           }}
           onSubmit={(values) => {
-            insert(values);
+            insert({...values, userType: user});
           }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
