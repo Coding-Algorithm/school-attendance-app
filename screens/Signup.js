@@ -19,8 +19,7 @@ const Signup = ({ navigation }) => {
   const [selected, setSelected] = useState(null);
   const [userType, setUserType] = useState(["Student", "Lecturer"]);
   const [user, setUser] = useState("");
-  const { insert } = GetContext();
-
+  const { insert} = GetContext();
 
   return (
     <ScrollView style={{ width: "100%" }}>
@@ -38,7 +37,8 @@ const Signup = ({ navigation }) => {
             courses: "",
           }}
           onSubmit={(values) => {
-            insert({...values, userType: user});
+            insert({ ...values, userType: user });
+            
           }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -109,17 +109,19 @@ const Signup = ({ navigation }) => {
                 />
               </View>
 
-              <View style={styles.inputWrapper}>
-                <Text style={styles.inputText}>Fingerprint: </Text>
-                <TextInput
-                  style={styles.signUpInput}
-                  onChangeText={handleChange("fingerprint")}
-                  value={values.fingerprint}
-                  placeholder="*******"
-                  onFocus={() => {}}
-                  // secureTextEntry={true}
-                />
-              </View>
+              {user === "Student" && (
+                <View style={styles.inputWrapper}>
+                  <Text style={styles.inputText}>Fingerprint: </Text>
+                  <TextInput
+                    style={styles.signUpInput}
+                    onChangeText={handleChange("fingerprint")}
+                    value={values.fingerprint}
+                    placeholder="*******"
+                    onFocus={() => {}}
+                    // secureTextEntry={true}
+                  />
+                </View>
+              )}
 
               <View style={styles.inputWrapper}>
                 <Text style={styles.inputText}>Courses: </Text>

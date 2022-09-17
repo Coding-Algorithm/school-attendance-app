@@ -20,33 +20,33 @@ const Login = ({ navigation }) => {
   const [errorMsg, setErrorMsg] = useState([]);
   const [userType, setUserType] = useState(["Student", "Lecturer"]);
   const [user, setUser] = useState("");
-  const { login } = GetContext();
+  const { login, auth } = GetContext();
+  const { fetchingUserError } = auth;
 
   {
     /* Aunthentication Function */
   }
-  
+
   const authentication = (values) => {
-    const { userType, userId, password } = values;
+    const { userType, userID, password } = values;
 
     const errorArray = [];
-    
+
     if (userType === "") {
       errorArray.push("User Type not choosen");
     }
-    if (userId < 2) {
+    if (userID < 2) {
       errorArray.push("Invalid User ID");
     }
     if (password < 8) {
       errorArray.push("Password can not be less than 8");
     }
-    if(errorArray.length > 0){
-      setErrorMsg(errorArray)
-      return
+    if (errorArray.length > 0) {
+      setErrorMsg(errorArray);
+      return;
     }
 
     login(values);
-
   };
 
   return (
@@ -55,14 +55,13 @@ const Login = ({ navigation }) => {
 
       {/* FORM */}
       <Formik
-        initialValues={{ userType: "", userId: "", password: "" }}
+        initialValues={{ userType: "", userID: "", password: "" }}
         onSubmit={(values) => {
           authentication({ ...values, userType: user });
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={{ width: "100%", alignItems: "center" }}>
-
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>User Type: </Text>
               <ModalDropdown
@@ -84,18 +83,18 @@ const Login = ({ navigation }) => {
                 }}
               />
             </View>
-          
+
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>User ID: </Text>
               <TextInput
                 style={[styles.loginInput]}
-                onChangeText={handleChange("userId")}
+                onChangeText={handleChange("userID")}
                 value={values.userId}
                 placeholder="CSC/2018/1164"
                 onFocus={() => {}}
               />
             </View>
-            
+
             <View style={styles.inputWrapper}>
               <Text style={styles.inputText}>Password: </Text>
               <TextInput
@@ -108,10 +107,14 @@ const Login = ({ navigation }) => {
               />
             </View>
 
-                {
-                  errorMsg &&
-                  errorMsg.map(error => <Text style={styles.errorMsg}>{error}</Text>)
-                }
+            {errorMsg &&
+              errorMsg.map((error) => (
+                <Text style={styles.errorMsg}>{error}</Text>
+              ))}
+
+            {fetchingUserError && (
+              <Text style={styles.errorMsg}>{fetchingUserError}</Text>
+            )}
 
             <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
               <Text
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
   },
   errorMsg: {
     fontSize: 12,
-    color: 'red',
-    fontWeight: 'bold'
-  }
+    color: "red",
+    fontWeight: "bold",
+  },
 });

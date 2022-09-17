@@ -6,12 +6,30 @@ const Reducer = (state, action) => {
         result: action.payload,
       };
       break;
-    case "LOGIN":
+    case "LOGIN_START":
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          fetchingUser: true,
+        },
+      };
+      break;
+    case "LOGIN_SUCCESS":
       return {
         ...state,
         auth: {
           ...state.auth,
           user: action.payload,
+        },
+      };
+      break;
+    case "LOGIN_FAILURE":
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          fetchingUserError: action.payload,
         },
       };
       break;
@@ -25,9 +43,6 @@ const Reducer = (state, action) => {
       };
       break;
     case "SIGNUP":
-
-      
-
       return {
         ...state,
         auth: {

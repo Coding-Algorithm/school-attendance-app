@@ -15,7 +15,11 @@ const ProfilePage = () => {
   const { logout, auth } = GetContext();
 
   const {user} = auth
-  const {userId, userType} = user
+
+  // console.log(JSON.parse(user)["userID"])
+  console.log(user.userID)
+
+  const {userID, name, faculty, dept, userType} = user
   // const {}
 
 
@@ -62,11 +66,11 @@ const ProfilePage = () => {
       >
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>Name: </Text>
-          <Text style={styles.value}>Ibrahim Taofeek</Text>
+          <Text style={styles.value}>{name}</Text>
         </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>User ID:</Text>
-          <Text style={styles.value}>{userId}</Text>
+          <Text style={styles.value}>{userID}</Text>
         </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>User Type:</Text>
@@ -74,11 +78,11 @@ const ProfilePage = () => {
         </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>Department:</Text>
-          <Text style={styles.value}>CSC</Text>
+          <Text style={styles.value}>{dept}</Text>
         </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>Faculty:</Text>
-          <Text style={styles.value}>Science</Text>
+          <Text style={styles.value}>{faculty}</Text>
         </View>
         <View style={styles.infoWrapper}>
           <Text style={styles.info}>Attendance:</Text>
