@@ -16,8 +16,6 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { GetContext } from "../context/context";
 
-
-
 // REPORT PAGE STARTS
 const ReportPage = ({ navigation }) => {
   const { auth, startDate, setStartDate, endDate, setEndDate } = GetContext();
@@ -71,8 +69,12 @@ const ReportPage = ({ navigation }) => {
   };
 
   const checkAttendance = () => {
-    navigation.navigate("ReportModal")
-  }
+    navigation.navigate("ReportModal");
+  };
+
+  const markAttendance = () => {
+    navigation.navigate("AttandanceModal");
+  };
 
   const showTimepicker = () => {
     showMode("time");
@@ -88,9 +90,6 @@ const ReportPage = ({ navigation }) => {
         console.log(err.message);
       });
   }, []);
-
-
-
 
   return (
     <SafeAreaView style={{ ...styles.reportPageContainer }}>
@@ -192,6 +191,17 @@ const ReportPage = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {userType === "Lecturer" && (
+        <TouchableOpacity
+          style={styles.checkAttendance}
+          onPress={() => markAttendance()}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            Mark Attendance
+          </Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

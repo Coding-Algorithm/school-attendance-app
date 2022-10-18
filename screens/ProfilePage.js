@@ -16,12 +16,7 @@ const ProfilePage = () => {
 
   const {user} = auth
 
-  // console.log(JSON.parse(user)["userID"])
-  console.log(user.userID)
-
   const {userID, name, faculty, dept, userType} = user
-  // const {}
-
 
   return (
     <SafeAreaView style={[{ ...styles.profilePageContainer }]}>

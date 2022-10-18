@@ -4,35 +4,28 @@ import React, { useState, useRef, useEffect } from "react";
 import ModalDropdown from "react-native-modal-dropdown";
 import attendanceData from "../dummyData/attendance";
 import { GetContext } from "../context/context";
-import axios from "axios";
 
 const HomeSearch = () => {
+
   const { auth, date, setResult, checkError, setCheckError } = GetContext();
   const { user } = auth;
   const { userType, userId } = user;
 
+  const coursesArray = user.courses.split(',')
+
   let dateLocal = date
     ? `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     : "";
+
 
   const [chosenStudent, setChosenStudent] = useState(
     userType == "Student" ? userId : ""
   );
   const [chosenCourse, setChosenCourse] = useState("");
   const [dropDownOpen, setdropDownOpen] = useState(false);
-  const [courses, setCourses] = useState([
-    "CSC301",
-    "CSC302",
-    "CSC303",
-    "MTH301",
-  ]);
+  const [courses, setCourses] = useState(coursesArray);
+  const [students, setStudents] = useState("");
 
-  const [students, setStudents] = useState([
-    "CSC/2018/1164",
-    "Two",
-    "Three",
-    "Four",
-  ]);
 
   let checkAttendance = (course, student, date) => {
     let errorMsg = [];
@@ -62,29 +55,6 @@ const HomeSearch = () => {
       }
     });
   };
-
-  useEffect(() => {
-    // Getting Courses: If UserType Is Lecturer
-    axios
-      .get(`https://school-attendance-api.herokuapp.com/api/course/${userId}`)
-      .then((response) => {
-        setCourses(() => response.data.map((course) => course.courseCode));
-      })
-      .catch((err) => {
-        console.log({ err: err.message });
-      });
-
-    // Getting Students: If UserType Is Lecturer
-    axios
-      .get(`https://school-attendance-api.herokuapp.com/api/student`)
-      .then((response) => {
-        setStudents(() => response.data.map((student) => student.matricNo));
-
-      })
-      .catch((err) => {
-        console.log({ err: err.message }); 
-      });
-  }, []);
 
   return (
     <View style={styles.homeSearchContainer}>

@@ -50,11 +50,7 @@ const ContextProvider = ({ children }) => {
       userType,
     } = data;
 
-    console.log("userTYpe >> ", userType);
-
     const receivingTable = userType.toLowerCase() + "s";
-
-    console.log("userTYpe >> ", receivingTable);
 
     const text = data.fullname;
 
@@ -77,21 +73,39 @@ const ContextProvider = ({ children }) => {
       //   (error) => console.log("ATTENDANCE not Deleted")
       // );
 
-      txn.executeSql(
-        `insert into ${receivingTable} (userID,name,courses, dept, faculty, fingerprint, email, password) values (?,?,?,?,?,?,?,?)`,
-        [
-          userID,
-          fullname,
-          courses,
-          department,
-          faculty,
-          fingerprint,
-          email,
-          password,
-        ],
-        () => console.log(`${userType} Added`),
-        (error) => console.log("Error")
-      );
+      if (userType === "student") {
+        txn.executeSql(
+          `insert into ${receivingTable} (userID,name,courses, dept, faculty, fingerprint, email, password) values (?,?,?,?,?,?,?,?)`,
+          [
+            userID,
+            fullname,
+            courses,
+            department,
+            faculty,
+            fingerprint,
+            email,
+            password,
+          ],
+          () => console.log(`${userType} Added`),
+          (error) => console.log("Error", error)
+        );
+      } else {
+        console.log("lecturer")
+        txn.executeSql(
+          `insert into ${receivingTable} (userID,name,courses, dept, faculty, email, password) values (?,?,?,?,?,?,?)`,
+          [
+            userID,
+            fullname,
+            courses,
+            department,
+            faculty,
+            email,
+            password,
+          ],
+          () => console.log(`${userType} Added`),
+          (error) => console.log("Error", error.message)
+        );
+      }
 
       txn.executeSql(
         `select * from ${receivingTable}`,
@@ -144,25 +158,34 @@ const ContextProvider = ({ children }) => {
   };
 
   const login = (user) => {
-    dispatch({ type: "LOGIN_START"});
-    
+    dispatch({ type: "LOGIN_START" });
+
     const { userID, password, userType } = user;
 
     const receivingTable = userType.toLowerCase() + "s";
-
 
     db.transaction((txn) => {
       txn.executeSql(
         `select * from ${receivingTable} WHERE userID='${userID}' AND password=${password}`,
         [],
-        (_, { rows:{_array} }) => {
-          const stringifyUser = JSON.stringify(_array[0])
-          let parsedUser = JSON.parse(stringifyUser)
-          parsedUser.userType = userType 
-          console.log(parsedUser)
+        (_, { rows: { _array } }) => {
+          console.log("Inside executeSql");
+          const stringifyUser = JSON.stringify(_array[0]);
+          console.log("parsedUser", _array);
+          let parsedUser = JSON.parse(stringifyUser);
+          parsedUser.userType = userType;
           dispatch({ type: "LOGIN_SUCCESS", payload: parsedUser });
+
+          console.log(userType)
+
+
+
         },
-        (e) => dispatch({ type: "LOGIN_FAILURE", payload: "User ID or Password Invalid" })
+        (e) =>
+          dispatch({
+            type: "LOGIN_FAILURE",
+            payload: "User ID or Password Invalid",
+          })
       );
     }, null);
   };
@@ -215,7 +238,7 @@ const ContextProvider = ({ children }) => {
 
       // create attendance table
       txn.executeSql(
-        "CREATE TABLE IF NOT EXISTS attendance (id INTEGER PRIMARY KEY NOT NULL, course varchar(6), date DATA, attended INTEGER, time TIME);",
+        "CREATE TABLE IF NOT EXISTS attendance (id INTEGER PRIMARY KEY NOT NULL, course varchar(6), date DATE, attended INTEGER, student varchar(13), time TIME);",
         [],
         (txn, { rows }) => {
           console.log("Attendance created");
