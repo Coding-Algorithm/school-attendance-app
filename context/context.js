@@ -114,20 +114,15 @@ const ContextProvider = ({ children }) => {
     }, null);
   };
 
-  const markAttendance = (data) => {
-    // is text empty?
-    // if (text === null || text === "") {
-    //   return false;
-    // }
-
-    db.transaction(
+  const markAttendance = ({chosenCourse, chosenStudent, date}) => {
+    db.transaction( 
       (tx) => {
         tx.executeSql(
-          "insert into attendance (value, name, address) values (?, ?, ?)",
-          ["text", "Ibrahim", "Good"]
+          "insert into attendance (course, date, attended, student) values (?, ?, ?, ?)",
+          [chosenCourse, date, 1, chosenStudent]
         );
 
-        tx.executeSql("select * from info", [], (_, { rows }) => {
+        tx.executeSql("select * from attendance", [], (_, { rows }) => {
           console.log(JSON.stringify(rows));
           console.log("Done");
         });
@@ -298,6 +293,7 @@ const ContextProvider = ({ children }) => {
         setStudentsForCourse,
         insert,
         getStudentsForCourse,
+        markAttendance
       }}
     >
       {children}

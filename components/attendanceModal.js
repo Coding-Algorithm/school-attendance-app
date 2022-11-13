@@ -130,11 +130,7 @@ const AttendanceModal = ({ navigation }) => {
             const date = new Date();
             date.setHours(0, 0, 0, 0);
 
-            // console.log(months[monthIndex]);
-
-            // console.log(date.getMonth(), date);
-
-            console.log("Marking present", chosenCourse, chosenStudent, date);
+            console.log({chosenCourse, chosenStudent, date});
           }}
         />
       </View>

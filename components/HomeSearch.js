@@ -6,26 +6,30 @@ import attendanceData from "../dummyData/attendance";
 import { GetContext } from "../context/context";
 
 const HomeSearch = () => {
-
-  const { auth, date, setResult, checkError, setCheckError } = GetContext();
+  const {
+    auth,
+    date,
+    setResult,
+    checkError,
+    setCheckError,
+    getStudentsForCourse,
+  } = GetContext();
   const { user } = auth;
   const { userType, userId } = user;
 
-  const coursesArray = user.courses.split(',')
+  const coursesArray = user.courses.split(",");
 
   let dateLocal = date
     ? `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     : "";
 
-
-  const [chosenStudent, setChosenStudent] = useState(
-    userType == "Student" ? userId : ""
-  );
+  const [chosenStudent, setChosenStudent] = useState(getStudentsForCourse);
   const [chosenCourse, setChosenCourse] = useState("");
   const [dropDownOpen, setdropDownOpen] = useState(false);
   const [courses, setCourses] = useState(coursesArray);
   const [students, setStudents] = useState("");
 
+  const hasChoseCourse = chosenCourse.length;
 
   let checkAttendance = (course, student, date) => {
     let errorMsg = [];
@@ -88,7 +92,7 @@ const HomeSearch = () => {
       </View>
 
       {/* STUDENT DROPDOWN, if user is lecturer */}
-      {userType === "Lecturer" && (
+      {userType === "Lecturer" && hasChoseCourse && (
         <View style={styles.studentSelectionWrapper}>
           <Text>Students: </Text>
           <ModalDropdown
