@@ -23,6 +23,8 @@ const HomeSearch = () => {
     ? `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     : "";
 
+  let dateWithoutTime = date.setHours(0, 0, 0, 0);
+
   const [chosenStudent, setChosenStudent] = useState(getStudentsForCourse);
   const [chosenCourse, setChosenCourse] = useState("");
   const [dropDownOpen, setdropDownOpen] = useState(false);
@@ -53,7 +55,7 @@ const HomeSearch = () => {
       if (
         attendance.course == course &&
         attendance.student == student &&
-        attendance.date == date
+        attendance.date == dateWithoutTime
       ) {
         setResult(attendance.attended);
       }
