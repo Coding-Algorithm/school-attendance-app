@@ -194,7 +194,10 @@ const ReportPage = ({ navigation }) => {
 
       {userType === "Lecturer" && (
         <TouchableOpacity
-          style={styles.checkAttendance}
+          style={[
+            styles.checkAttendance,
+            { backgroundColor: "orange" },
+          ]}
           onPress={() => markAttendance()}
         >
           <Text style={{ color: "white", fontWeight: "bold" }}>
@@ -286,6 +289,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginHorizontal: "30%",
     fontWeight: "bold",
+    alignItems: 'center'
   },
   ionicon: {
     position: "absolute",

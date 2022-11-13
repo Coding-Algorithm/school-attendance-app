@@ -15,7 +15,7 @@ const ReportModal = ({ navigation }) => {
   const attendance = attendanceData.filter(
     (item) => (item.date >= startDate) & (item.date <= endDate)
   );
-  
+   
   return (
     <View style={[styles.container]}>
       <View

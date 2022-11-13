@@ -1,5 +1,12 @@
-import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  ScrollView,
+  Alert,
+} from "react-native";
+import React, { useState } from "react";
 import { StatusBarHeight } from "./shared";
 import { GetContext } from "../context/context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -9,8 +16,13 @@ import attendanceData from "../dummyData/attendance";
 import ModalDropdown from "react-native-modal-dropdown";
 
 const AttendanceModal = ({ navigation }) => {
-  const { startDate, endDate } = GetContext();
-  const month = [
+  const { startDate, endDate, auth, studentsForCourse, getStudentsForCourse } =
+    GetContext();
+  const { user } = auth;
+
+  const lecturerCourses = user.courses.split(",");
+
+  const months = [
     "January",
     "February",
     "March",
@@ -25,7 +37,16 @@ const AttendanceModal = ({ navigation }) => {
     "December",
   ];
 
-  console.log(attendanceData);
+  console.log(studentsForCourse, "for course");
+
+  const [students, setStudents] = useState(studentsForCourse);
+  const [chosenStudent, setChosenStudent] = useState("");
+  const [chosenCourse, setChosenCourse] = useState("");
+  const [dropDownOpen, setdropDownOpen] = useState(false);
+  const [courses] = useState(lecturerCourses);
+
+  const isCourseChosen = chosenCourse.length ? true : false;
+
   const attendance = attendanceData.filter(
     (item) => (item.date >= startDate) & (item.date <= endDate)
   );
@@ -41,20 +62,20 @@ const AttendanceModal = ({ navigation }) => {
         }}
       >
         <Text style={{ fontSize: 25, fontWeight: "bold", color: "white" }}>
-          Report Modal
+          Take Attendance
         </Text>
       </View>
 
-      <View style={styles.selectStudent}>
+      <View style={styles.selectCourse}>
         <Text style={{ fontSize: 15, fontWeight: "bold", marginBottom: 5 }}>
-          Select Student
+          Select Course
         </Text>
         <ModalDropdown
-          style={styles.studentSelection}
-          options={students}
+          style={styles.courseSelection}
+          options={courses}
           textStyle={{ fontSize: 15, marginRight: 15 }}
-          defaultValue="Select Student"
-          dropdownStyle={styles.StudentDropdown}
+          defaultValue="Select course"
+          dropdownStyle={styles.courseDropdown}
           renderRightComponent={() => (
             <Ionicons
               name="chevron-down-outline"
@@ -63,11 +84,68 @@ const AttendanceModal = ({ navigation }) => {
             />
           )}
           dropdownTextStyle={{ fontSize: 15, paddingHorizontal: 35 }}
-          onSelect={(value, index) => setChosenStudent(index)}
+          onSelect={(index, value) => {
+            setChosenCourse(value);
+            getStudentsForCourse({
+              value: "userID",
+              table: "student",
+              course: value,
+            });
+          }}
         />
       </View>
 
-      <Button title="Back" onPress={() => navigation.goBack()} />
+      {isCourseChosen && (
+        <View style={styles.selectStudent}>
+          <Text style={{ fontSize: 15, fontWeight: "bold", marginBottom: 15 }}>
+            Select Student
+          </Text>
+          <ModalDropdown
+            style={styles.studentSelection}
+            options={students}
+            textStyle={{ fontSize: 15, marginRight: 15 }}
+            defaultValue="Select Student"
+            dropdownStyle={styles.StudentDropdown}
+            renderRightComponent={() => (
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                style={styles.ionicon}
+              />
+            )}
+            dropdownTextStyle={{ fontSize: 15, paddingHorizontal: 35 }}
+            onSelect={(value, index) => setChosenStudent(index)}
+          />
+        </View>
+      )}
+
+      <View style={{ marginBottom: 20, width: "100%", alignItems: "center" }}>
+        <Button
+          title="Mark Present"
+          onPress={() => {
+            if (!chosenStudent) {
+              return;
+            }
+
+            const date = new Date();
+            date.setHours(0, 0, 0, 0);
+
+            // console.log(months[monthIndex]);
+
+            // console.log(date.getMonth(), date);
+
+            console.log("Marking present", chosenCourse, chosenStudent, date);
+          }}
+        />
+      </View>
+
+      <View style={{ marginBottom: 10, width: "100%", alignItems: "center" }}>
+        <Button
+          title="Back"
+          color="green"
+          onPress={() => navigation.goBack()}
+        />
+      </View>
     </View>
   );
 };
@@ -90,5 +168,41 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: "green",
+  },
+  selectStudent: {
+    width: "100%",
+    marginBottom: 10,
+    margin: 10,
+  },
+  studentSelection: {
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    // borderWidth: 2,
+    marginBottom: 15,
+    borderRadius: 8,
+    justifyContent: "space-around",
+    alignItems: "stretch",
+    width: "90%",
+    backgroundColor: "#9bd5a0",
+    position: "relative",
+  },
+
+  selectCourse: {
+    width: "100%",
+    margin: 10,
+  },
+  courseSelection: {
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    // borderWidth: 2,
+    marginBottom: 5,
+    marginRight: 15,
+    borderRadius: 8,
+    justifyContent: "space-around",
+    alignItems: "stretch",
+    width: "90%",
+    backgroundColor: "#9bd5a0",
   },
 });

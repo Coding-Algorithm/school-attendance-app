@@ -29,11 +29,14 @@ const ContextProvider = ({ children }) => {
   const [endDate, setEndDate] = useState(new Date());
   const [schools, setSchools] = useState([]);
   const [students, setStudents] = useState([]);
+  const [studentsForCourse, setStudentsForCourse] = useState([]);
 
   function openDatabase() {
     const db = SQLite.openDatabase("attendance.db");
     return db;
   }
+
+  const studentsForCourseList = [];
 
   const db = openDatabase();
 
@@ -90,18 +93,10 @@ const ContextProvider = ({ children }) => {
           (error) => console.log("Error", error)
         );
       } else {
-        console.log("lecturer")
+        console.log("lecturer");
         txn.executeSql(
           `insert into ${receivingTable} (userID,name,courses, dept, faculty, email, password) values (?,?,?,?,?,?,?)`,
-          [
-            userID,
-            fullname,
-            courses,
-            department,
-            faculty,
-            email,
-            password,
-          ],
+          [userID, fullname, courses, department, faculty, email, password],
           () => console.log(`${userType} Added`),
           (error) => console.log("Error", error.message)
         );
@@ -119,16 +114,16 @@ const ContextProvider = ({ children }) => {
     }, null);
   };
 
-  const add = (text) => {
+  const markAttendance = (data) => {
     // is text empty?
-    if (text === null || text === "") {
-      return false;
-    }
+    // if (text === null || text === "") {
+    //   return false;
+    // }
 
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "insert into info (value, name, address) values (?, ?, ?)",
+          "insert into attendance (value, name, address) values (?, ?, ?)",
           ["text", "Ibrahim", "Good"]
         );
 
@@ -142,13 +137,48 @@ const ContextProvider = ({ children }) => {
     );
   };
 
-  function get(value = "*", table, ORDER) {
+  const isStudentTakingCourse = (userCourse, course) => {
+    const userCourseList = userCourse.split(",");
+
+    const isThere = userCourseList.includes(course);
+
+    return isThere ? true : false;
+  };
+
+  function getStudentsForCourse({ value = "*", table, course }) {
+
+    console.log(value, table, course)
+
     db.transaction((txn) => {
-      txn.executeSql(`SELECT ${value} FROM ${table} ORDER BY id DESC`),
+      txn.executeSql(
+        `SELECT * FROM students`,
         [],
-        (sqlTxn, { rows: { _array } }) => {
-          console.log(JSON.stringify(_array));
-        };
+        (_, { rows: { _array } }) => {
+          const stringifyUser = JSON.stringify(_array);
+
+          let parsedUser = JSON.parse(stringifyUser);
+
+          console.log("parsedUser")
+          console.log(parsedUser)
+
+          parsedUser.map((student) => {
+            const studentTakingCourse = isStudentTakingCourse(
+              student.courses,
+              course
+            );
+
+            console.log(studentTakingCourse, "here:::", student.userID);
+            studentsForCourseList.push(student.userID);
+          });
+
+          setStudentsForCourse(studentsForCourseList);
+        },
+        (e) =>
+          dispatch({
+            type: "LOGIN_FAILURE",
+            payload: "User ID or Password Invalid",
+          })
+      );
     });
   }
 
@@ -171,15 +201,12 @@ const ContextProvider = ({ children }) => {
         (_, { rows: { _array } }) => {
           console.log("Inside executeSql");
           const stringifyUser = JSON.stringify(_array[0]);
-          console.log("parsedUser", _array);
+          console.log("parsedUser", _array[0]);
           let parsedUser = JSON.parse(stringifyUser);
           parsedUser.userType = userType;
           dispatch({ type: "LOGIN_SUCCESS", payload: parsedUser });
 
-          console.log(userType)
-
-
-
+          console.log(userType);
         },
         (e) =>
           dispatch({
@@ -267,7 +294,10 @@ const ContextProvider = ({ children }) => {
         setStartDate,
         endDate,
         setEndDate,
+        studentsForCourse,
+        setStudentsForCourse,
         insert,
+        getStudentsForCourse,
       }}
     >
       {children}
