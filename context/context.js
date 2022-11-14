@@ -35,9 +35,6 @@ const ContextProvider = ({ children }) => {
     const db = SQLite.openDatabase("attendance.db");
     return db;
   }
-
-  const studentsForCourseList = [];
-
   const db = openDatabase();
 
   const insert = (data) => {
@@ -114,25 +111,25 @@ const ContextProvider = ({ children }) => {
     }, null);
   };
 
-  const markAttendance = ({chosenCourse, chosenStudent, date}) => {
-    db.transaction( 
-      (tx) => {
-        tx.executeSql(
-          "insert into attendance (course, date, attended, student) values (?, ?, ?, ?)",
-          [chosenCourse, date, 1, chosenStudent]
-        );
+  const markAttendance = ({ chosenCourse, chosenStudent, date }) => {
+    console.log(chosenCourse, chosenStudent, date);
 
-        tx.executeSql("select * from attendance", [], (_, { rows }) => {
-          console.log(JSON.stringify(rows));
-          console.log("Done");
-        });
-      }
-      // null,
+    db.transaction(
+      (txn) => {
+        console.log("got here");
+        txn.executeSql(
+          `insert into attendance (id,course, date, attended, student) values (?,?,?,?,?)`,
+          [date, chosenCourse, date, 1, chosenStudent],
+          () => console.log(`${userType} Added`),
+          (error) => console.log("Error", error)
+        );
+      },
+      null
       // forceUpdate
     );
   };
 
-  const isStudentTakingCourse = (userCourse, course) => {
+  const checkIsStudentTakingCourse = (userCourse, course) => {
     const userCourseList = userCourse.split(",");
 
     const isThere = userCourseList.includes(course);
@@ -140,9 +137,8 @@ const ContextProvider = ({ children }) => {
     return isThere ? true : false;
   };
 
-  function getStudentsForCourse({ value = "*", table, course }) {
-
-    console.log(value, table, course)
+  function getStudentsForCourse({ value = "*", table = "students", course }) {
+    console.log(value, table, course);
 
     db.transaction((txn) => {
       txn.executeSql(
@@ -153,20 +149,24 @@ const ContextProvider = ({ children }) => {
 
           let parsedUser = JSON.parse(stringifyUser);
 
-          console.log("parsedUser")
-          console.log(parsedUser)
+          // console.log("parsedUser")
+          // console.log(parsedUser)
+
+          let studentsForCourseList = [];
+          setStudentsForCourse([]);
 
           parsedUser.map((student) => {
-            const studentTakingCourse = isStudentTakingCourse(
+            console.log(student.courses, ":::", course);
+            const isStudentTakingCourse = checkIsStudentTakingCourse(
               student.courses,
               course
             );
 
-            console.log(studentTakingCourse, "here:::", student.userID);
-            studentsForCourseList.push(student.userID);
+            // console.log('taking?', isStudentTakingCourse)
+            isStudentTakingCourse && studentsForCourseList.push(student.userID);
           });
 
-          setStudentsForCourse(studentsForCourseList);
+          setStudents([...studentsForCourseList]);
         },
         (e) =>
           dispatch({
@@ -260,7 +260,7 @@ const ContextProvider = ({ children }) => {
 
       // create attendance table
       txn.executeSql(
-        "CREATE TABLE IF NOT EXISTS attendance (id INTEGER PRIMARY KEY NOT NULL, course varchar(6), date DATE, attended INTEGER, student varchar(13), time TIME);",
+        "CREATE TABLE IF NOT EXISTS attendance (id INTEGER PRIMARY KEY NOT NULL, course varchar(6), date DATE, attended INTEGER, student varchar(13));",
         [],
         (txn, { rows }) => {
           console.log("Attendance created");
@@ -291,9 +291,11 @@ const ContextProvider = ({ children }) => {
         setEndDate,
         studentsForCourse,
         setStudentsForCourse,
+        students,
+        setStudents,
         insert,
         getStudentsForCourse,
-        markAttendance
+        markAttendance,
       }}
     >
       {children}

@@ -16,7 +16,7 @@ import attendanceData from "../dummyData/attendance";
 import ModalDropdown from "react-native-modal-dropdown";
 
 const AttendanceModal = ({ navigation }) => {
-  const { startDate, endDate, auth, studentsForCourse, getStudentsForCourse } =
+  const { startDate, endDate, auth, studentsForCourse, getStudentsForCourse, students, markAttendance } =
     GetContext();
   const { user } = auth;
 
@@ -39,7 +39,7 @@ const AttendanceModal = ({ navigation }) => {
 
   console.log(studentsForCourse, "for course");
 
-  const [students, setStudents] = useState(studentsForCourse);
+  // const [students, setStudents] = useState(studentsForCourse);
   const [chosenStudent, setChosenStudent] = useState("");
   const [chosenCourse, setChosenCourse] = useState("");
   const [dropDownOpen, setdropDownOpen] = useState(false);
@@ -130,7 +130,7 @@ const AttendanceModal = ({ navigation }) => {
             const date = new Date();
             date.setHours(0, 0, 0, 0);
 
-            console.log({chosenCourse, chosenStudent, date});
+            markAttendance({chosenCourse, chosenStudent, date});
           }}
         />
       </View>

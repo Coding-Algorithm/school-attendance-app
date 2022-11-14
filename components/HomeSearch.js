@@ -12,7 +12,10 @@ const HomeSearch = () => {
     setResult,
     checkError,
     setCheckError,
+    studentsForCourse,
     getStudentsForCourse,
+    students,
+    setStudents,
   } = GetContext();
   const { user } = auth;
   const { userType, userId } = user;
@@ -23,15 +26,18 @@ const HomeSearch = () => {
     ? `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
     : "";
 
-  let dateWithoutTime = date.setHours(0, 0, 0, 0);
+  // let dateWithoutTime = date ? date.setHours(0, 0, 0, 0) : "";
 
-  const [chosenStudent, setChosenStudent] = useState(getStudentsForCourse);
+  console.log(studentsForCourse, "student");
+  console.log("student");
+
+  const [chosenStudent, setChosenStudent] = useState("");
   const [chosenCourse, setChosenCourse] = useState("");
   const [dropDownOpen, setdropDownOpen] = useState(false);
   const [courses, setCourses] = useState(coursesArray);
-  const [students, setStudents] = useState("");
+  // const [students, setStudents] = useState(studentsForCourse);
 
-  const hasChoseCourse = chosenCourse.length;
+  const hasChoseCourse = chosenCourse.length ? true : false;
 
   let checkAttendance = (course, student, date) => {
     let errorMsg = [];
@@ -46,6 +52,10 @@ const HomeSearch = () => {
       errorMsg.push("You have to select a date");
     }
 
+    console.log(date);
+
+    return;
+
     setCheckError(errorMsg);
     if (checkError.length > 0) {
       return;
@@ -55,7 +65,7 @@ const HomeSearch = () => {
       if (
         attendance.course == course &&
         attendance.student == student &&
-        attendance.date == dateWithoutTime
+        attendance.date == date.setHours(0, 0, 0, 0)
       ) {
         setResult(attendance.attended);
       }
@@ -89,7 +99,10 @@ const HomeSearch = () => {
             width: 290,
             textAlign: "center",
           }}
-          onSelect={(value, index) => setChosenCourse(index)}
+          onSelect={(value, index) => {
+            setChosenCourse(index);
+            getStudentsForCourse({ course: index });
+          }}
         />
       </View>
 
